@@ -21,7 +21,7 @@
 -compile(export_all).
 -module(getmails).
 
--include("../src/atomizer.hrl").
+-include("atomizer.hrl").
 
 % generate already-seen file name
 alse_fn(Group) -> "getmails-alse-" ++ Group ++ ".txt".
