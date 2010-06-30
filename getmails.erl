@@ -52,4 +52,4 @@ getmails(Group) ->
 	AlSe = read_alse(Group),
 	Entries = Feed#feed.entries,
 	write_alse(Entries, Group),
-	News = lists:filter(fun(Entry) -> not lists:member(Entry#feedentry.permalink, AlSe) end, Entries).
+	lists:filter(fun(Entry) -> not lists:member(Entry#feedentry.permalink, AlSe) end, Entries).
