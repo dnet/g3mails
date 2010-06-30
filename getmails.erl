@@ -45,7 +45,6 @@ read_alse(FD, List) ->
 		Line -> read_alse(FD, [string:strip(Line, right, $\n) | List])
 	end.
 
-getmails() -> getmails("hspbp").
 getmails(Group) ->
 	Feed = atomizer:parse_url(
 		"http://groups.google.com/group/" ++ Group ++ "/feed/atom_v1_0_msgs.xml"),
