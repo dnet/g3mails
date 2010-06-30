@@ -18,8 +18,8 @@
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 % THE SOFTWARE.
 
--compile(export_all).
 -module(getmails).
+-export([getmails/1]).
 
 -include("atomizer.hrl").
 
