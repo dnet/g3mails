@@ -19,7 +19,10 @@
 % THE SOFTWARE.
 
 -module(g3m_notify).
--compile(export_all). % not for debug, _every_ function needs to be exported
+-export([notifier/3, setup_notify/1, setup_notify/2, setup_notify/3,
+	ircmain/2, ircmain/3, ircmain/4, ircproc/3]).
+
+-include("atomizer.hrl").
 
 % get mail every Interval ms, send message if necessary, quit if msg recv'd
 notifier(Group, Interval, Pid) ->
@@ -37,3 +40,29 @@ setup_notify(Group) -> setup_notify(Group, 90000).
 setup_notify(Group, Interval) -> setup_notify(Group, Interval, self()).
 setup_notify(Group, Interval, Pid) ->
 	spawn(?MODULE, notifier, [Group, Interval, Pid]).
+
+% bridges notifier to dnet's fork of erlang-ircbot
+ircmain(Bot, Group) -> ircmain(Bot, Group, 90000).
+ircmain(Bot, Group, Interval) ->
+	ircmain(Bot, Group, Interval, "[groups] ~s sent ~s").
+ircmain(Bot, Group, Interval, Format) ->
+	IP = spawn(?MODULE, ircproc, [Bot, Format, null]),
+	N = setup_notify(Group, Interval, IP),
+	IP ! {npid, N},
+	IP.
+
+% relays messages in the appropriate form
+ircproc(Bot, Format, Notify) ->
+	receive
+		{npid, N} when is_pid(N) -> ircproc(Bot, Format, N);
+		quit when is_pid(Notify) -> Notify ! quit;
+		{g3m_notify, Mails} ->
+			lists:foreach(
+				fun(E) -> Bot ! {announce, mailfmt(E, Format)} end, Mails),
+			ircproc(Bot, Format, Notify)
+	end.
+
+% formats a mail header (order: from, subject)
+mailfmt(Mail, Format) ->
+	lists:flatten(io_lib:format(Format,
+		[Mail#feedentry.author, Mail#feedentry.title])).
