@@ -26,10 +26,12 @@
 
 % get mail every Interval ms, send message if necessary, quit if msg recv'd
 notifier(Group, Interval, Pid) ->
-	case getmails:getmails(Group) of
-		[] -> nop;
-		Mails -> Pid ! {g3m_notify, Mails}
-	end,
+	spawn(fun() ->
+		case getmails:getmails(Group) of
+			[] -> nop;
+			Mails -> Pid ! {g3m_notify, Mails}
+		end
+	end),
 	receive
 		_ -> quit
 		after Interval -> notifier(Group, Interval, Pid)
