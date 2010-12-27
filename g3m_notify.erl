@@ -58,6 +58,9 @@ ircproc(Bot, Format, Notify) ->
 	receive
 		{npid, N} when is_pid(N) -> ircproc(Bot, Format, N);
 		quit when is_pid(Notify) -> Notify ! quit;
+		{ident, Pid} ->
+			Pid ! {ident, "g3m_notify (notifier: " ++ pid_to_list(Notify) ++ ")"},
+			ircproc(Bot, Format, Notify);
 		{g3m_notify, Mails} ->
 			lists:foreach(
 				fun(E) -> Bot ! {announce, mailfmt(E, Format)} end, Mails),
