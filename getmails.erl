@@ -27,6 +27,7 @@
 alse_fn(Group) -> "getmails-alse-" ++ Group ++ ".txt".
 
 % write entries that were already seen to file
+write_alse([], _) -> nop;
 write_alse(Entries, Group) ->
 	{ok, FD} = file:open(alse_fn(Group), [write]),
 	lists:foreach(fun(Entry) ->
