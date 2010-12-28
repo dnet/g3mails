@@ -25,6 +25,8 @@
 -include("atomizer.hrl").
 
 % get mail every Interval ms, send message if necessary, quit if msg recv'd
+notifier(Group, Interval, Pid) when is_list(Interval) ->
+	notifier(Group, list_to_integer(Interval), Pid);
 notifier(Group, Interval, Pid) ->
 	spawn(fun() ->
 		case getmails:getmails(Group) of
